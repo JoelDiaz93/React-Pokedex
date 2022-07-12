@@ -1,5 +1,5 @@
 import { useState, createContext, useContext, useEffect } from "react";
-import { getPokemonRequest } from "../api/pokemon";
+import { getPokemonRequest, getPokemonsRequest } from "../api/pokemon";
 
 const pokemonContext = createContext();
 
@@ -9,15 +9,24 @@ export const usePokemon = () => {
 };
 
 export const PokemonProvider = ({ children }) => {
-  const [pokemon, setPokemon] = useState([]);
+  const [pokemons, setPokemons] = useState([]);
+
+  useEffect(() => {
+    getPokemons();
+  }, []);
+
+  const getPokemons = async () => {
+    const res = await getPokemonsRequest();
+    setPokemons(res.data.results);
+  };
 
   const getPokemon = async (id) => {
     const res = await getPokemonRequest(id);
-    console.log(res);
+    return res.data;
   };
 
   return (
-    <pokemonContext.Provider value={{ getPokemon }}>
+    <pokemonContext.Provider value={{ pokemons, getPokemon }}>
       {children}
     </pokemonContext.Provider>
   );
